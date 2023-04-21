@@ -1,0 +1,22 @@
+clear
+clc
+
+%Creates the wave diffraction diagram in the form of a contour plot using the
+%calculated values of diffraction coefficients  
+
+function [C,h]=diffdiag(B,x,y,theta0,CrP,CrN)
+
+[X, Y]=meshgrid(x,y);
+[Z]=diffcoeff(B,X,Y,theta0,CrP,CrN);
+[C,h]=contour(X,Y,Z,0.1:0.1:2.0);
+clabel(C,h);
+rectangle('Position',[(B./2)/1,0,((x(end)-B/2))/1,0.2],'FaceColor','k')
+rectangle('Position',[-x(end)/1,0,((x(end)-B/2))/1,0.2],'FaceColor','k')
+set(h,'ShowText','on','TextStep',get(h,'LevelStep')*2)
+axis equal;
+axis tight;
+colorbar;
+xlabel('x/L');
+ylabel('y/L');
+title(['B=',num2str(B),', ','theta0=',num2str(theta0),', ','Cr^+ =',num2str(CrP),', ','Cr^- =',num2str(CrN)]);
+end

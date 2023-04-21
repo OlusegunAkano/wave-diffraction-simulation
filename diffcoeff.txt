@@ -1,0 +1,416 @@
+
+
+%Calculates the wave diffraction coefficients 
+%for waves of oblique incidence on a breakwater gap
+%Where 
+%B= Breakwater gap width,x and y are the cartesian coordinates 
+%of the considered point(s) in the x and y plane respectively
+%with the centre of the breakwater gap as a point 
+%of origin
+%theta0=angle of incidence in degrees measured anti-clockwise
+%from the positive x-axis 
+%CrP and CrN are the reflection coefficients of the 
+%first and second breakwater(left and right)respectively
+%Reference Akano Olusegun, UNILAG NG, Nov.(2015)
+%segun.akano1@gmail.com
+
+
+clear
+clc
+
+function K1=diffcoeff(B,x,y,theta0,CrP,CrN)
+
+if (B>5)
+    disp('WARNING! Breakwater gap widths above 5L are treated as independent solutions of semi-infinite breakwaters')
+end
+if theta0==90    
+E=0;
+else E=2.*pi.*abs((ceil(B)-((B/2).*cosd(theta0)))-((B/2).*cosd(theta0)));
+end
+if B>5
+x1=abs(B/2+x).*(x<=0);
+x2=abs(B/2-x).*(x>=0);
+r1=(sqrt(y.^2+x1.^2)).*(x<=0);
+r2=(sqrt(y.^2+x2.^2)).*(x>=0);
+%theta1A
+pA=((abs(x)>B/2)&(y>0)).*abs(y);
+qA=((abs(x)>B/2)&(y>0)).*abs(x1);
+pA=pA+(pA==0)*eps;
+qA=qA+(qA==0)*eps;
+theta1A=(180-atand(abs(pA./qA))).*((abs(x)>B/2)&(y>0));
+%theta1B
+pB=((abs(x)>B/2)&(y<0)).*abs(y);
+qB=((abs(x)>B/2)&(y<0)).*abs(x1);
+pB=pB+(pB==0)*eps;
+qB=qB+(qB==0)*eps;
+theta1B=(180+atand(abs(pB./qB))).*((abs(x)>B/2)&(y<0));
+%theta1C
+theta1C=90.*((abs(x)==B/2)&(y>0));
+%theta1D
+theta1D=270.*((abs(x)==B/2)&(y<0));
+%theta1E
+pE=((abs(x)<B/2)&(y>0)).*abs(y);
+qE=((abs(x)<B/2)&(y>0)).*abs(x1);
+pE=pE+(pE==0)*eps;
+qE=qE+(qE==0)*eps;
+theta1E=(atand(abs(pE./qE))).*((abs(x)<B/2)&(y>0));
+%theta1F
+pF=((abs(x)<B/2)&(y<0)).*abs(y);
+qF=((abs(x)<B/2)&(y<0)).*abs(x1);
+pF=pF+(pF==0)*eps;
+qF=qF+(qF==0)*eps;
+theta1F=(360-atand(abs(pF./qF))).*((abs(x)<B/2)&(y<0));
+%theta1G
+theta1G=360.*(((x==0)|(abs(x)<B/2))&(y==0));
+%theta1H
+theta1H=360.*((abs(x)==B/2)&(y==0));
+%theta1I
+theta1I=180.*((abs(x)>B/2)&(y==0));
+%theta1J
+pJ=((x==0)&(y>0)).*abs(y);
+qJ=((x==0)&(y>0)).*abs(x1);
+pJ=pJ+(pJ==0)*eps;
+qJ=qJ+(qJ==0)*eps;
+theta1J=atand(pJ./qJ).*((x==0)&(y>0));
+%theta1K
+pK=((x==0)&(y<0)).*abs(y);
+qK=((x==0)&(y<0)).*abs(x1);
+pK=pK+(pK==0)*eps;
+qK=qK+(qK==0)*eps;
+theta1K=(360-atand(abs(pK./qK))).*((x==0)&(y<0));
+%theta1
+theta1= theta1A+theta1B+theta1C+theta1D+theta1E+theta1F+theta1G+theta1H+theta1I+theta1J+theta1K;
+theta1=theta1.*(x<=0);
+%theta2A
+pA=((x>B/2)&(y<0)).*abs(y);
+qA=((x>B/2)&(y<0)).*abs(x2);
+pA=pA+(pA==0)*eps;
+qA=qA+(qA==0)*eps;
+theta2A=(360-atand(abs(pA./qA))).*((x>B/2)&(y<0));
+%theta2B
+pB=((x>B/2)&(y>0)).*abs(y);
+qB=((x>B/2)&(y>0)).*abs(x2);
+pB=pB+(pB==0)*eps;
+qB=qB+(qB==0)*eps;
+theta2B=atand(pB./qB).*((x>B/2)&(y>0));
+%theta2C
+theta2C=270.*((x==B/2)&(y<0));
+%theta2D
+theta2D=90.*((x==B/2)&(y>0));
+%theta2E
+pE=((x<B/2)&(y<0)).*abs(y);
+qE=((x<B/2)&(y<0)).*abs(x2);
+pE=pE+(pE==0)*eps;
+qE=qE+(qE==0)*eps;
+theta2E=(180+atand(abs(pE./qE))).*((x<B/2)&(y<0));
+%theta2F
+pF=((x<B/2)&(y>0)).*abs(y);
+qF=((x<B/2)&(y>0)).*abs(x2);
+pF=pF+(pF==0)*eps;
+qF=qF+(qF==0)*eps;
+theta2F=(180-atand(abs(pF./qF))).*((x<B/2)&(y>0));
+%theta2G
+theta2G=180.*(((x==0)|(x<B/2))&(y==0));
+%theta2H
+theta2H=360.*((x==B/2)&(y==0));
+%theta2I
+theta2I=0.*((x>B/2)&(y==0));
+%theta2J
+pJ=((x==0)&(y>0)).*abs(y);
+qJ=((x==0)&(y>0)).*abs(x2);
+pJ=pJ+(pJ==0)*eps;
+qJ=qJ+(qJ==0)*eps;
+theta2J=(180-atand(pJ./qJ)).*((x==0)&(y>0));
+%theta2K
+pK=((x==0)&(y<0)).*abs(y);
+qK=((x==0)&(y<0)).*abs(x2);
+pK=pK+(pK==0)*eps;
+qK=qK+(qK==0)*eps;
+theta2K=(180+atand(abs(pK./qK))).*((x==0)&(y<0));
+%theta2
+theta2=theta2A+theta2B+theta2C+theta2D+theta2E+theta2F+theta2G+theta2H+theta2I+theta2J+theta2K;
+theta2=theta2.*(x>=0);
+
+k=2*pi.*(x==x);
+sigma2=sqrt(4.*k.*r2./pi.*((sind(0.5.*(theta2-theta0))).^2));
+sigma2P=sqrt(4.*k.*r2./pi.*((sind(0.5.*(theta2+theta0))).^2));
+p=exp(-1i.*(k.*r2.*cosd(theta2-theta0)));
+q=(0.5.*((1-fresnels(sigma2)-fresnelc(sigma2))+1i.*(fresnels(sigma2)-fresnelc(sigma2))));
+r=CrN.*(exp(-1i.*(k.*r2.*cosd(theta2-theta0))));
+s=(0.5.*((1-fresnels(sigma2P)-fresnelc(sigma2P))+1i.*(fresnels(sigma2P)-fresnelc(sigma2P))));
+t=(0.5.*((1+fresnels(sigma2)+fresnelc(sigma2))-1i.*(fresnels(sigma2)-fresnelc(sigma2))));
+u=(0.5.*((1+fresnels(sigma2P)+fresnelc(sigma2P))-1i.*(fresnels(sigma2P)-fresnelc(sigma2P))));
+%FB=F2
+F1B=((p.*q)+(r.*s)).*((0<theta2)&(theta2<=theta0));
+F2B=((p.*t)+(r.*s)).*((theta0<theta2)&(theta2<=(360-theta0)));
+F3B=((p.*t)+(r.*u)).*(((360-theta0)<theta2)&(theta2<=360));
+FB=F1B+F2B+F3B;
+
+sigma1=sqrt(4.*k.*r1./pi.*((sind(0.5.*(theta1-theta0))).^2));
+sigma1P=sqrt(4.*k.*r1./pi.*((sind(0.5.*(theta1+theta0))).^2));
+a=exp(-1i.*(k.*r1.*cosd(theta1-theta0)));
+b=(0.5.*((1-fresnels(sigma1)-fresnelc(sigma1))+1i.*(fresnels(sigma1)-fresnelc(sigma1))));
+c=CrP.*(exp(-1i.*(k.*r1.*cosd(theta1-theta0))));
+d=(0.5.*((1-fresnels(sigma1P)-fresnelc(sigma1P))+1i.*(fresnels(sigma1P)-fresnelc(sigma1P))));
+e=(0.5.*((1+fresnels(sigma1)+fresnelc(sigma1))-1i.*(fresnels(sigma1)-fresnelc(sigma1))));
+f=(0.5.*((1+fresnels(sigma1P)+fresnelc(sigma1P))-1i.*(fresnels(sigma1P)-fresnelc(sigma1P))));
+%FA=F1
+F1A=((a.*b)+(c.*d)).*((theta0<theta1)&(theta1<=180));
+F2A=((a.*e)+(c.*d)).*(((0<theta1)&(theta1<=theta0))|(((360-theta0)<theta1)&(theta1<=360)));
+F3A=((a.*e)+(c.*f)).*((180<theta1)&(theta1<=(360-theta0)));
+FA=abs(F1A)+abs(F2A)+abs(F3A);
+K1=(abs((FA.*(x<0))+(FB.*(x>0)))).*(B>5);
+elseif (B<=5)
+%x1 & x2
+x1A=((x.*(x>0 & (x>B/2 | x<B/2)))+B/2).*(x>0 & (x>B/2 | x<B/2));
+x1B=((abs(x).*(x<0 & abs(x)>B/2))-B/2).*(x<0 & abs(x)>B/2);
+x1C=(B/2-(abs(x).*(x<0 & abs(x)<B/2))).*(x<0 & abs(x)<B/2);
+x1D=(x.*(x<0 & abs(x)==B/2)).*0;
+x1E=2.*x.*(x>0 & x==B/2);
+x1F=B/2.*(x==0);
+x1=x1A+x1B+x1C+x1D+x1E+x1F;
+x2A=((x.*(x>0 & x>B/2))-B/2).*(x>0 & x>B/2);
+x2B=(B/2-(x.*(x>0 & x<B/2))).*(x>0 & x<B/2);
+x2C=(B/2+(abs(x).*(x<0 & (abs(x)<B/2 | abs(x)>B/2)))).*(x<0 & (abs(x)<B/2 | abs(x)>B/2));
+x2D=2.*abs(x).*(x<0 & abs(x)==B/2);
+x2E=(x.*(x>0 & x==B/2)).*0;
+x2F=B/2.*(x==0);
+x2=x2A+x2B+x2C+x2D+x2E+x2F;
+%theta1A
+pA=(y>0 & x>0 & (x>B/2 | x<B/2)).*abs(y);
+qA=(y>0 & x>0 & (x>B/2 | x<B/2)).*abs(x1);
+pA=pA+(pA==0)*eps;
+qA=qA+(qA==0)*eps;
+theta1A=atand((pA./qA).*(y>0 & x>0 & (x>B/2 | x<B/2)));
+%theta1B
+pB=(x==0 & y>0).*abs(y);
+qB=(x==0 & y>0).*abs(x1);
+pB=pB+(pB==0)*eps;
+qB=qB+(qB==0)*eps;
+theta1B=atand((pB./qB).*(x==0 & y>0));
+%theta1C
+pC=(x>0 & x==B/2 & y>0).*abs(y);
+qC=(x>0 & x==B/2 & y>0).*abs(x1);
+pC=pC+(pC==0)*eps;
+qC=qC+(qC==0)*eps;
+theta1C=atand((pC./qC).*(x>0 & x==B/2 & y>0));
+%theta1D
+pD=(x>0 & y<0 & (x>B/2 | x<B/2)).*abs(y);
+qD=(x>0 & y<0 & (x>B/2 | x<B/2)).*abs(x1);
+pD=pD+(pD==0)*eps;
+qD=qD+(qD==0)*eps;
+theta1D=(360-(atand((pD./qD).*(x>0 & y<0 & (x>B/2 | x<B/2))))).*(x>0 & y<0 & (x>B/2 | x<B/2));
+%theta1E
+pE=(x==0 & y<0).*abs(y);
+qE=(x==0 & y<0).*abs(x1);
+pE=pE+(pE==0)*eps;
+qE=qE+(qE==0)*eps;
+theta1E=(360-(atand((pE./qE).*(x==0 & y<0)))).*(x==0 & y<0);
+%theta1F
+pF=(x<0 & abs(x)<B/2 & y<0).*abs(y);
+qF=(x<0 & abs(x)<B/2 & y<0).*abs(x1);
+pF=pF+(pF==0)*eps;
+qF=qF+(qF==0)*eps;
+theta1F=(360-(atand((pF./qF).*(x<0 & abs(x)<B/2 & y<0)))).*(x<0 & abs(x)<B/2 & y<0);
+%theta1G
+pG=(x>0 & x==B/2 & y<0).*abs(y);
+qG=(x>0 & x==B/2 & y<0).*abs(x1);
+pG=pG+(pG==0)*eps;
+qG=qG+(qG==0)*eps;
+theta1G=(360-(atand((pG./qG).*(x>0 & x==B/2 & y<0)))).*(x>0 & x==B/2 & y<0);
+%theta1H
+pH=(x<0 & abs(x)>B/2 & y>0).*abs(y);
+qH=(x<0 & abs(x)>B/2 & y>0).*abs(x1);
+pH=pH+(pH==0)*eps;
+qH=qH+(qH==0)*eps;
+theta1H=(180-(atand((pH./qH).*(x<0 & abs(x)>B/2 & y>0)))).*(x<0 & abs(x)>B/2 & y>0);
+%theta1I
+pI=(x<0 & abs(x)>B/2 & y<0).*abs(y);
+qI=(x<0 & abs(x)>B/2 & y<0).*abs(x1);
+pI=pI+(pI==0)*eps;
+qI=qI+(qI==0)*eps;
+theta1I=(180+(atand((pI./qI).*(x<0 & abs(x)>B/2 & y<0)))).*(x<0 & abs(x)>B/2 & y<0);
+%theta1J
+pJ=(x<0 & abs(x)<B/2 & y>0).*abs(y);
+qJ=(x<0 & abs(x)<B/2 & y>0).*abs(x1);
+pJ=pJ+(pJ==0)*eps;
+qJ=qJ+(qJ==0)*eps;
+theta1J=atand((pJ./qJ).*(x<0 & abs(x)<B/2 & y>0));
+%theta1K
+theta1K=90.*(x<0 & abs(x)==B/2 & y>0);
+%theta1L
+theta1L=270.*(x<0 & abs(x)==B/2 & y<0);
+%theta1M
+theta1M=0.*(x>0 & x>B/2 & y==0);
+%theta1N
+theta1N=0.*(x>0 & x==B/2 & y==0);
+%theta1O
+theta1O=0.*(x>0 & x<B/2 & y==0);
+%theta1P
+theta1P=180.*(x<0 & abs(x)>B/2 & y==0);
+%theta1Q
+theta1Q=0.*(x<0 & abs(x)<B/2 & y==0);
+%%theta1R
+theta1R=360.*(x<0 & abs(x)==B/2 & y==0);
+%theta1S
+theta1S=0.*(x==0 & y==0);
+theta1=theta1A+theta1B+theta1C+theta1D+theta1E+theta1F+theta1G...
++theta1H+theta1I+theta1J+theta1K+theta1L+theta1M+theta1N+theta1O+theta1P...
++theta1Q+theta1R+theta1S;
+%theta2A
+pA=(y>0 & x>0 & x>B/2).*abs(y);
+qA=(y>0 & x>0 & x>B/2).*abs(x2);
+pA=pA+(pA==0)*eps;
+qA=qA+(qA==0)*eps;
+theta2A=atand((pA./qA).*(y>0 & x>0 & x>B/2));
+%theta2B
+pB=(x>0 & y<0 & x>B/2).*abs(y);
+qB=(x>0 & y<0 & x>B/2).*abs(x2);
+pB=pB+(pB==0)*eps;
+qB=qB+(qB==0)*eps;
+theta2B=(360-(atand((pB./qB).*(x>0 & y<0 & x>B/2)))).*(x>0 & y<0 & x>B/2);
+%theta2C
+pC=(y>0 & x>0 & x<B/2).*abs(y);
+qC=(y>0 & x>0 & x<B/2).*abs(x2);
+pC=pC+(pC==0)*eps;
+qC=qC+(qC==0)*eps;
+theta2C=(180-(atand((pC./qC).*(y>0 & x>0 & x<B/2)))).*(y>0 & x>0 & x<B/2);
+%theta2D
+pD=(x<0 & abs(x)>B/2 & y>0).*abs(y);
+qD=(x<0 & abs(x)>B/2 & y>0).*abs(x2);
+pD=pD+(pD==0)*eps;
+qD=qD+(qD==0)*eps;
+theta2D=(180-(atand((pD./qD).*(x<0 & abs(x)>B/2 & y>0)))).*(x<0 & abs(x)>B/2 & y>0);
+%theta2E
+pE=(x<0 & abs(x)<B/2 & y>0).*abs(y);
+qE=(x<0 & abs(x)<B/2 & y>0).*abs(x2);
+pE=pE+(pE==0)*eps;
+qE=qE+(qE==0)*eps;
+theta2E=(180-(atand((pE./qE).*(x<0 & abs(x)<B/2 & y>0)))).*(x<0 & abs(x)<B/2 & y>0);
+%theta2F
+pF=(x<0 & abs(x)==B/2 & y>0).*abs(y);
+qF=(x<0 & abs(x)==B/2 & y>0).*abs(x2);
+pF=pF+(pF==0)*eps;
+qF=qF+(qF==0)*eps;
+theta2F=(180-(atand((pF./qF).*(x<0 & abs(x)==B/2 & y>0)))).*(x<0 & abs(x)==B/2 & y>0);
+%theta2G
+pG=(x==0 & y>0).*abs(y);
+qG=(x==0 & y>0).*abs(x2);
+pG=pG+(pG==0)*eps;
+qG=qG+(qG==0)*eps;
+theta2G=(180-(atand((pG./qG).*(x==0 & y>0)))).*(x==0 & y>0);
+%theta2H
+pH=(x>0 & y<0 & x<B/2).*abs(y);
+qH=(x>0 & y<0 & x<B/2).*abs(x2);
+pH=pH+(pH==0)*eps;
+qH=qH+(qH==0)*eps;
+theta2H=(180+(atand((pH./qH).*(x>0 & y<0 & x<B/2)))).*(x>0 & y<0 & x<B/2);
+%theta2I
+pI=(x<0 & abs(x)>B/2 & y<0).*abs(y);
+qI=(x<0 & abs(x)>B/2 & y<0).*abs(x2);
+pI=pI+(pI==0)*eps;
+qI=qI+(qI==0)*eps;
+theta2I=(180+(atand((pI./qI).*(x<0 & abs(x)>B/2 & y<0)))).*(x<0 & abs(x)>B/2 & y<0);
+%theta2J
+pJ=(x<0 & abs(x)<B/2 & y<0).*abs(y);
+qJ=(x<0 & abs(x)<B/2 & y<0).*abs(x2);
+pJ=pJ+(pJ==0)*eps;
+qJ=qJ+(qJ==0)*eps;
+theta2J=(180+(atand((pJ./qJ).*(x<0 & abs(x)<B/2 & y<0)))).*(x<0 & abs(x)<B/2 & y<0);
+%theta2K
+pK=(x<0 & abs(x)==B/2 & y<0).*abs(y);
+qK=(x<0 & abs(x)==B/2 & y<0).*abs(x2);
+pK=pK+(pK==0)*eps;
+qK=qK+(qK==0)*eps;
+theta2K=(180+(atand((pK./qK).*(x<0 & abs(x)==B/2 & y<0)))).*(x<0 & abs(x)==B/2 & y<0);
+%theta2L
+pL=(x==0 & y<0).*abs(y);
+qL=(x==0 & y<0).*abs(x2);
+pL=pL+(pL==0)*eps;
+qL=qL+(qL==0)*eps;
+theta2L=(180+(atand((pL./qL).*(x==0 & y<0)))).*(x==0 & y<0);
+%theta2M
+theta2M=90.*(x>0 & x==B/2 & y>0);
+%theta2N
+theta2N=270.*(x>0 & x==B/2 & y<0);
+%theta2O
+theta2O=0.*(x>0 & x>B/2 & y==0);
+%%theta2P
+theta2P=360.*(x>0 & x==B/2 & y==0);
+%theta2Q
+theta2Q=180.*(x>0 & x<B/2 & y==0);
+%theta2R
+theta2R=180.*(x<0 & abs(x)>B/2 & y==0);
+%theta2S
+theta2S=180.*(x<0 & abs(x)==B/2 & y==0);
+%theta2T
+theta2T=180.*(x<0 & abs(x)<B/2 & y==0);
+%theta2U
+theta2U=180.*(x==0 & y==0);
+theta2=theta2A+theta2B+theta2C+theta2D+theta2E+theta2F+theta2G+theta2H...
++theta2I+theta2J+theta2K+theta2L+theta2M+theta2N+theta2O+theta2P+theta2Q...
++theta2R+theta2S+theta2T+theta2U;
+%thetaZ1
+p1=(x<0 & y>0).*abs(y);
+q1=(x<0 & y>0).*abs(x);
+p1=p1+(p1==0)*eps;
+q1=q1+(q1==0)*eps;
+thetaZ1=(180-(atand((p1./q1).*(x<0 & y>0)))).*(x<0 & y>0);
+%thetaZ2
+p2=(x>0 & y>0).*abs(y);
+q2=(x>0 & y>0).*abs(x);
+p2=p2+(p2==0)*eps;
+q2=q2+(q2==0)*eps;
+thetaZ2=atand((p2./q2).*(x>0 & y>0));
+%thetaZ3
+thetaZ3=90.*(x==0 & y>0);
+%thetaZ4
+thetaZ4=180.*(x<0 & y==0);
+%thetaZ5
+thetaZ5=0.*(x>0 & y==0);
+%thetaZ6
+p6=(x<0 & y<0).*abs(y);
+q6=(x<0 & y<0).*abs(x);
+p6=p6+(p6==0)*eps;
+q6=q6+(q6==0)*eps;
+thetaZ6=(180+(atand((p6./q6).*(x<0 & y<0)))).*(x<0 & y<0);
+%thetaZ7
+p7=(x>0 & y<0).*abs(y);
+q7=(x>0 & y<0).*abs(x);
+p7=p7+(p7==0)*eps;
+q7=q7+(q7==0)*eps;
+thetaZ7=(360-(atand((p7./q7).*(x>0 & y<0)))).*(x>0 & y<0);
+%thetaZ8
+thetaZ8=270.*(x==0 & y<0);
+thetaZ=thetaZ1+thetaZ2+thetaZ3+thetaZ4+thetaZ5+thetaZ6+thetaZ7+thetaZ8;
+%r1,r2,k,E
+r1=sqrt(y.^2+x1.^2);
+r2=sqrt(y.^2+x2.^2);
+k=2*pi.*(x==x);
+
+%sigma1,sigma2,f1,f2,g1,g2
+sigma1=sqrt(4.*k.*r1./pi.*((sind(0.5.*(theta1-theta0))).^2));
+sigma1P=sqrt(4.*k.*r1./pi.*((sind(0.5.*(theta1+theta0))).^2));
+f1=exp(-1i.*(k.*r1.*cosd(theta1-theta0))).*(0.5.*((1-fresnels(sigma1)-fresnelc(sigma1))+1i.*(fresnels(sigma1)-fresnelc(sigma1))));
+g1=exp(-1i.*(k.*r1.*cosd(theta1+theta0))).*(0.5.*((1-fresnels(sigma1P)-fresnelc(sigma1P))+1i.*(fresnels(sigma1P)-fresnelc(sigma1P))));
+sigma2=sqrt(4.*k.*r2./pi.*((sind(0.5.*(theta2-theta0))).^2));
+sigma2P=sqrt(4.*k.*r2./pi.*((sind(0.5.*(theta2+theta0))).^2));
+f2=exp(-1i.*((k.*r2.*cosd(theta2-theta0))-E)).*(0.5.*((1-fresnels(sigma2)-fresnelc(sigma2))+1i.*(fresnels(sigma2)-fresnelc(sigma2))));
+g2=exp(-1i.*((k.*r2.*cosd(theta2+theta0))-E)).*(0.5.*((1-fresnels(sigma2P)-fresnelc(sigma2P))+1i.*(fresnels(sigma2P)-fresnelc(sigma2P))));
+%F1 & F2
+F1A=(exp(-1i.*(k.*r1.*cosd(theta1-theta0)))-f1+(CrP.*g1)).*((theta0<theta1)&(theta1<=(360-theta0)));
+F1B=(exp(-1i.*(k.*r1.*cosd(theta1-theta0)))+(CrP.*exp(-1i.*(k.*r1.*cosd(theta1+theta0))))-f1-(CrN.*g1)).*(((360-theta0)<theta1)&(theta1<=360));
+F1C=(f1+(CrP.*g1)).*((0<theta1)&(theta1<=theta0));
+F1=F1A+F1B+F1C; 
+F2A=(exp(-1i.*((k.*r2.*cosd(theta2-theta0))-E))-f2+(CrN.*g2)).*((0<theta2)&(theta2<=theta0));
+F2B=(exp(-1i.*((k.*r2.*cosd(theta2-theta0))-E))-f2+(CrN.*g2)).*(((360-theta0)<theta2)&(theta2<=360));
+F2C=(exp(-1i.*((k.*r2.*cosd(theta2-theta0))-E))+(CrN.*exp(-1i.*((k.*r2.*cosd(theta2+theta0))-E)))-f2-(CrN.*g2)).*((180<theta2)&(theta2<=(360-theta0)));
+F2D=(f2+(CrN.*g2)).*((theta0<theta2)&(theta2<=180));
+F2=F2A+F2B+F2C+F2D;
+%F
+FA=(F1+F2-exp(-1i.*((k.*r2.*cosd(theta2-theta0))-E))).*((0<thetaZ)&(thetaZ<=theta0));%fine
+FB=(F1+F2-exp(-1i.*k.*r1.*cosd(theta1-theta0))).*((theta0<thetaZ)&(thetaZ<=180));
+FC=(F1+F2-exp(-1i.*k.*r1.*cosd(theta1-theta0))).*~(((0<thetaZ)&(thetaZ<=theta0))|((theta0<thetaZ)&(thetaZ<=180)));
+K1=(abs(abs(FA)+abs(FB)+abs(FC))).*(B<=5);
+end
+
